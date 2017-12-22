@@ -346,6 +346,98 @@ void QSort(T data[], int first, int last, bool (*comperator)(T,T))
         QSort(data,upper+1,last,comperator);
 }
 
+/***************************************3-Way QuickSort*************************************/
+/*
+Based off 3-Way QuickSort (Dutch National Flag)
+GeeksforGeeks.org
+*/
+
+template<class T>
+void Three_Way_Partition(T data[], int lo, int hi, int &i, int &j)
+{
+    i = lo - 1, j = hi;
+    int p = lo - 1, q = hi;
+    
+    T v = data[hi];
+
+    while(true)
+    {
+        while(data[++i] < v); 
+        while(v < data[--j])
+            if(j == lo)
+                break;
+        if(i >= j)
+            break;
+        Swap(data,i,j);
+        if(data[i] == v)
+        {
+            p++;
+            Swap(data,p,i);
+        }
+        if(v == data[j])
+        {
+            q--;
+            Swap(data,j,q);
+        }
+    }
+
+    Swap(data,i,hi);
+    j = i-1; 
+    i = i+1;
+
+    for(int k = lo; k < p; k++, j--)
+        Swap(data,k,j);
+    for(int k = hi-1; k > q; k--,i++)
+        Swap(data,i,k);
+    
+}
+
+template<class T>
+void Three_Way_Sort(T data[], int low, int high)
+{
+    if(high<=low)
+        return;
+
+    //Call Partation
+    int i,j;
+    Three_Way_Partition(data,low,high,i,j);
+
+    //Recursively call sort
+    Three_Way_Sort(data,low,j);
+    Three_Way_Sort(data,i,high);
+}
+
+/***************************************Binary Search************************/
+/*
+I know it is not a sorting algorithm but here is binary serach
+Iterative Binary serach returns index of the item if found, return negative integer
+if not found.
+*/
+
+template<class T>
+int BinarySearch(T data[], int size, T element_to_find)
+{
+    int high = size-1;
+    int low = 0;
+
+    while(low<=high)
+    {
+        int mid = (low+high)/2;
+
+        //Found it, return mid
+        if(data[mid] == element_to_find)
+            return mid;
+
+        //If element is greater than element at mid, ignore first half
+        if(element_to_find > data[mid])
+            low = mid+1;
+        else 
+            high = mid-1;
+    }
+
+    return -1;
+}
+
 
 
 bool int_compare(int i, int j)
@@ -364,10 +456,12 @@ int main()
         std::cout<<data[i]<<' ';
     }
     std::cout<<'\n';
-    InsertationSort<int>(data,25,int_compare);
+    Three_Way_Sort<int>(data,0,24);
     for(int i = 0; i < 25; i++)
     {
         std::cout<<data[i]<<' ';
     }
     std::cout<<'\n';
+
+    std::cout<<BinarySearch<int>(data,25,4)<<std::endl;
 }
